@@ -1,0 +1,15 @@
+[build]
+builder = "node"
+workdir = "backend"
+command = "npm install"
+
+[start]
+command = "npm start"
+workdir = "backend"
+
+[deploy]
+startCommand = "npm start"
+workdir = "backend"
+
+[http]
+port = 3000 

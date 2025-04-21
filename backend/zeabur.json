@@ -1,6 +1,7 @@
 {
   "name": "checkin-system-backend",
   "type": "node",
+  "builder": "node",
   "build": {
     "command": "npm install",
     "output": "."
