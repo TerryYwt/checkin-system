@@ -146,6 +146,16 @@ const PORT = process.env.PORT || 3000;
 
 let server;
 
+// Add this function to check database configuration
+function logDatabaseConfig() {
+  console.log('Database Configuration:');
+  console.log(`DB_HOST: ${process.env.DB_HOST || process.env.ZEABUR_DB_HOST || 'localhost'}`);
+  console.log(`DB_PORT: ${process.env.DB_PORT || process.env.ZEABUR_DB_PORT || '3306'}`);
+  console.log(`DB_NAME: ${process.env.DB_NAME || process.env.ZEABUR_DB_NAME || 'checkin_system'}`);
+  console.log(`DB_USER: ${process.env.DB_USER || process.env.ZEABUR_DB_USER || 'root'}`);
+  console.log(`DB_PASS: ${process.env.DB_PASS ? '[PROVIDED]' : '[NOT PROVIDED]'}`);
+}
+
 initializeDatabase().then(() => {
   server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
@@ -183,7 +193,30 @@ initializeDatabase().then(() => {
   }
 }).catch(error => {
   console.error('Failed to start server:', error);
-  process.exit(1);
+  
+  // Log the database configuration for debugging
+  logDatabaseConfig();
+  
+  // Start the server anyway to serve a maintenance page or API error response
+  if (process.env.START_WITHOUT_DB === 'true') {
+    console.log('Starting server without database connection...');
+    
+    // Replace all database-dependent routes with error handlers
+    app.use('/api', (req, res) => {
+      res.status(503).json({
+        error: 'Database Unavailable',
+        message: 'The database is currently unavailable. Please try again later.',
+        timestamp: new Date().toISOString()
+      });
+    });
+    
+    // Start the server
+    server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running in maintenance mode on port ${PORT}`);
+    });
+  } else {
+    process.exit(1);
+  }
 });
 
 module.exports = app; 

@@ -11,6 +11,15 @@
   "port": 3000,
   "env": {
     "NODE_ENV": "production",
-    "PORT": "3000"
-  }
+    "PORT": "3000",
+    "DB_HOST": "mysql.zeabur.internal",
+    "DB_PORT": "3306",
+    "DB_USER": "root",
+    "DB_PASS": "${MYSQL_ROOT_PASSWORD}",
+    "DB_NAME": "checkin_system",
+    "JWT_SECRET": "${JWT_SECRET}"
+  },
+  "dependencies": [
+    "mysql"
+  ]
 } 

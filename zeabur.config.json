@@ -6,6 +6,16 @@
   },
   "services": [
     {
+      "name": "checkin-system-mysql",
+      "type": "mysql",
+      "version": "8.0",
+      "plan": "free",
+      "env": {
+        "MYSQL_ROOT_PASSWORD": "${MYSQL_ROOT_PASSWORD}",
+        "MYSQL_DATABASE": "checkin_system"
+      }
+    },
+    {
       "name": "checkin-system-backend",
       "type": "dockerfile",
       "source": {
@@ -19,12 +29,12 @@
       "env": {
         "NODE_ENV": "production",
         "PORT": "3000",
-        "DB_HOST": "YOUR_DB_HOST",
+        "DB_HOST": "mysql.zeabur.internal",
         "DB_PORT": "3306",
         "DB_NAME": "checkin_system",
-        "DB_USER": "YOUR_DB_USER",
-        "DB_PASS": "YOUR_DB_PASSWORD",
-        "JWT_SECRET": "YOUR_JWT_SECRET"
+        "DB_USER": "root",
+        "DB_PASS": "${MYSQL_ROOT_PASSWORD}",
+        "JWT_SECRET": "${JWT_SECRET}"
       },
       "resources": {
         "cpu": 1,
@@ -37,7 +47,8 @@
         "interval": 30,
         "timeout": 5,
         "retries": 3
-      }
+      },
+      "dependencies": ["checkin-system-mysql"]
     },
     {
       "name": "checkin-system-frontend",
@@ -57,7 +68,8 @@
       "resources": {
         "cpu": 0.5,
         "memory": 256
-      }
+      },
+      "dependencies": ["checkin-system-backend"]
     }
   ],
   "domains": [
@@ -77,6 +89,11 @@
       "from": "checkin-system-frontend",
       "to": "checkin-system-backend",
       "port": 3000
+    },
+    {
+      "from": "checkin-system-backend",
+      "to": "checkin-system-mysql",
+      "port": 3306
     }
   ],
   "buildSettings": {
