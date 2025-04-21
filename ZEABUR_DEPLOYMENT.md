@@ -6,15 +6,17 @@ This project is configured for deployment on Zeabur with a monorepo structure co
 
 ```
 /
-├── backend/        # Node.js Express backend
+├── backend/                    # Node.js Express backend
 │   ├── package.json
 │   ├── src/
-│   └── zeabur.json # Backend-specific configuration
-├── frontend/       # Vue.js frontend
+│   ├── Dockerfile             # Backend Docker configuration
+│   └── zeabur.json            # Backend-specific configuration
+├── frontend/                   # Vue.js frontend
 │   ├── package.json
 │   ├── src/
-│   └── zeabur.json # Frontend-specific configuration
-├── zeabur.toml     # Root configuration for Zeabur
+│   ├── Dockerfile             # Frontend Docker configuration
+│   └── zeabur.json            # Frontend-specific configuration
+├── zeabur.toml                 # Root configuration for Zeabur
 └── ...
 ```
 
@@ -26,20 +28,22 @@ This project is configured for deployment on Zeabur with a monorepo structure co
    - Create a new service in Zeabur
    - Select your GitHub repository
    - Set subdirectory to `/backend`
-   - Zeabur will use `backend/zeabur.json` for configuration
+   - Select "Docker" as the deployment type
+   - Zeabur will use `backend/Dockerfile` for building
 
 2. **Frontend Service**:
    - Create another service in Zeabur
    - Select the same GitHub repository
    - Set subdirectory to `/frontend`
-   - Zeabur will use `frontend/zeabur.json` for configuration
+   - Select "Docker" as the deployment type
+   - Zeabur will use `frontend/Dockerfile` for building
 
 ### Option 2: Deploy from Root (Using zeabur.toml)
 
 1. Create a service in Zeabur
 2. Select your GitHub repository (no subdirectory)
 3. Zeabur will use the root `zeabur.toml` file
-4. This will create both services as defined in the `[services]` section
+4. This will create both services as defined in the `[services]` section, each with its own Dockerfile
 
 ## Environment Variables
 
@@ -71,4 +75,12 @@ If you encounter issues:
 1. Check Zeabur logs in the dashboard
 2. Verify environment variables are set correctly
 3. Ensure database connection is working
-4. Check CORS configuration if frontend can't connect to backend 
+4. Check CORS configuration if frontend can't connect to backend
+
+## Why Dockerfiles?
+
+We're using Dockerfiles to ensure that Zeabur correctly identifies our services instead of relying on auto-detection. This provides several benefits:
+- More explicit control over the build process
+- No ambiguity about project type
+- Consistent builds across environments
+- Better isolation between frontend and backend 

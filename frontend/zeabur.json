@@ -1,11 +1,8 @@
 {
   "name": "checkin-system-frontend",
-  "type": "vue",
-  "builder": "vue",
-  "build": {
-    "command": "npm install && npm run build",
-    "output": "dist"
-  },
+  "type": "dockerfile",
+  "dockerfile": "Dockerfile",
+  "port": 80,
   "env": {
     "NODE_ENV": "production",
     "VITE_API_URL": "https://checkin-system.zeabur.app/api"

@@ -16,15 +16,14 @@ port = 3000
 
 [services.backend]
 name = "checkin-system-backend"
-type = "node"
+type = "dockerfile"
 workdir = "backend"
-buildCommand = "npm install"
-startCommand = "npm start"
+dockerfile = "backend/Dockerfile"
 port = 3000
 
 [services.frontend]
 name = "checkin-system-frontend"
-type = "vue"
+type = "dockerfile"
 workdir = "frontend"
-buildCommand = "npm install && npm run build"
-outputDir = "frontend/dist" 
+dockerfile = "frontend/Dockerfile"
+port = 80 
