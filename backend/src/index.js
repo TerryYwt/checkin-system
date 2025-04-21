@@ -24,6 +24,7 @@ const mainRoutes = require('./routes');
 
 const sequelize = require('./config/sequelize');
 const { User } = require('./models');
+const initDatabase = require('./scripts/init-database');
 
 // Load environment variables
 dotenv.config();
@@ -31,6 +32,14 @@ dotenv.config();
 // Initialize database and create test user
 const initializeDatabase = async () => {
   try {
+    console.log('Initializing database...');
+    
+    // Try to initialize database with our script first
+    const initSuccess = await initDatabase();
+    if (!initSuccess) {
+      throw new Error('Database initialization script failed');
+    }
+    
     // Test database connection
     await sequelize.authenticate();
     console.log('Database connection successful.');
@@ -118,10 +127,16 @@ app.use('/api/admin', adminRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
+  const dbStatus = sequelize.authenticate()
+    .then(() => true)
+    .catch(() => false);
+  
   res.json({ 
     status: 'ok',
     timestamp: new Date().toISOString(),
-    db_connected: sequelize.authenticate().then(() => true).catch(() => false)
+    environment: process.env.NODE_ENV || 'development',
+    db_host: process.env.DB_HOST || process.env.ZEABUR_DB_HOST || 'not set',
+    db_connected: dbStatus
   });
 });
 
