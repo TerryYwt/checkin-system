@@ -84,8 +84,24 @@ app.use((req, res, next) => {
   next();
 });
 
+// Root route handler
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok',
+    message: 'Checkin System API is running',
+    version: '1.0.0',
+    env: process.env.NODE_ENV || 'development'
+  });
+});
+
 // Base routes
 app.use('/api', mainRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/merchants', merchantRoutes);
+app.use('/api/stores', storeRoutes);
+app.use('/api/qr-codes', qrCodeRoutes);
+app.use('/api/checkins', checkinRoutes);
 
 // Admin routes
 const adminRouter = express.Router();
@@ -102,7 +118,21 @@ app.use('/api/admin', adminRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ 
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    db_connected: sequelize.authenticate().then(() => true).catch(() => false)
+  });
+});
+
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({ 
+    error: 'Not Found',
+    path: req.path,
+    method: req.method,
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Error handling
@@ -114,14 +144,46 @@ app.use((err, req, res, next) => {
 // Initialize database and start server
 const PORT = process.env.PORT || 3000;
 
+let server;
+
 initializeDatabase().then(() => {
-  app.listen(PORT, '0.0.0.0', () => {
+  server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Server environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`Database: ${process.env.ZEABUR_DB_HOST || process.env.DB_HOST || 'localhost'}`);
   });
+  
+  // Handle graceful shutdown
+  process.on('SIGTERM', gracefulShutdown);
+  process.on('SIGINT', gracefulShutdown);
+  
+  function gracefulShutdown() {
+    console.log('Received shutdown signal, closing connections...');
+    
+    // Close the HTTP server
+    server.close(() => {
+      console.log('HTTP server closed');
+      
+      // Close database connection
+      sequelize.close().then(() => {
+        console.log('Database connections closed');
+        console.log('Shutdown complete');
+        process.exit(0);
+      }).catch(err => {
+        console.error('Error closing database connections:', err);
+        process.exit(1);
+      });
+    });
+    
+    // If server doesn't close in 10 seconds, force shutdown
+    setTimeout(() => {
+      console.error('Could not close connections in time, forcefully shutting down');
+      process.exit(1);
+    }, 10000);
+  }
 }).catch(error => {
   console.error('Failed to start server:', error);
+  process.exit(1);
 });
 
 module.exports = app; 
