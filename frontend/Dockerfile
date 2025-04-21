@@ -4,19 +4,17 @@ FROM node:18-alpine as build
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json package-lock.json* ./
 
-# Install dependencies
+# Install dependencies with explicit vite installation
 RUN npm install
-
-# Install vite globally
-RUN npm install -g vite
+RUN npm install -g vite @vitejs/plugin-vue
 
 # Copy the rest of the code
 COPY . .
 
-# Build the app
-RUN npm run build
+# Build the app with an explicit command
+RUN npx vite build
 
 # Production stage
 FROM nginx:alpine
@@ -24,8 +22,15 @@ FROM nginx:alpine
 # Copy the built files to nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy nginx config if needed
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Create a simple nginx config with proper SPA routing
+RUN echo 'server { \
+  listen 80; \
+  root /usr/share/nginx/html; \
+  index index.html; \
+  location / { \
+    try_files $uri $uri/ /index.html; \
+  } \
+}' > /etc/nginx/conf.d/default.conf
 
 # Expose port
 EXPOSE 80
