@@ -12,4 +12,19 @@ startCommand = "npm start"
 workdir = "backend"
 
 [http]
-port = 3000 
+port = 3000
+
+[services.backend]
+name = "checkin-system-backend"
+type = "node"
+workdir = "backend"
+buildCommand = "npm install"
+startCommand = "npm start"
+port = 3000
+
+[services.frontend]
+name = "checkin-system-frontend"
+type = "vue"
+workdir = "frontend"
+buildCommand = "npm install && npm run build"
+outputDir = "frontend/dist" 
