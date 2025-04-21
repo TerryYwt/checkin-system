@@ -115,8 +115,10 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
 
 initializeDatabase().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Server environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Database: ${process.env.ZEABUR_DB_HOST || process.env.DB_HOST || 'localhost'}`);
   });
 }).catch(error => {
   console.error('Failed to start server:', error);

@@ -32,6 +32,25 @@ app.use(express.urlencoded({ extended: true }));
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Root route handler for health checks
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok',
+    message: 'Checkin System API is running',
+    version: '1.0.0'
+  });
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok',
+    dbStatus: sequelize.authenticate()
+      .then(() => 'connected')
+      .catch(() => 'disconnected')
+  });
+});
+
 // Base routes
 app.use('/api', mainRoutes);
 app.use('/api/auth', authRoutes);
@@ -42,6 +61,7 @@ app.use('/api/qr-codes', qrCodeRoutes);
 app.use('/api/checkins', checkinRoutes);
 app.use('/api/campaigns', campaignRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/merchant/settings', merchantSettingsRoutes);
 
 // Admin routes
 const adminRouter = express.Router();
@@ -55,6 +75,15 @@ adminRouter.use('/campaigns', adminCampaignRoutes);
 
 // Mount admin router
 app.use('/api/admin', adminRouter);
+
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({ 
+    error: 'Not Found',
+    path: req.path,
+    method: req.method
+  });
+});
 
 // Error handling
 app.use((err, req, res, next) => {

@@ -9,20 +9,39 @@ yarn-error.log
 .env.local
 .env.*.local
 
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
 # Logs
-logs/
+logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Build
-dist/
-build/
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# System Files
+# Dependency directories
+.npm
+.eslintcache
+.node_repl_history
+.yarn-integrity
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Production
+/build
+/dist
+
+# Misc
 .DS_Store
-Thumbs.db 
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo 
