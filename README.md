@@ -310,4 +310,69 @@ API_URL=https://your-backend-url.zeabur.app
 2. Set up environment variables in Zeabur dashboard
 3. Deploy backend service
 4. Deploy frontend service
-5. Configure custom domain (optional) 
+5. Configure custom domain (optional)
+
+# Zeabur Internal Network Test
+
+This is a simple Node.js application to test connectivity to other services on Zeabur's internal network.
+
+## How to Use
+
+1. Deploy this service to your Zeabur project
+2. Check the logs to see if it can connect to your internal service at `checkin-system.zeabur.internal:8080`
+
+## What This Test Does
+
+This test attempts to make an HTTP request to your internal service at `checkin-system.zeabur.internal:8080/api` and logs the results.
+
+If successful, you'll see a status code and response body in the logs.
+If unsuccessful, you'll see an error message in the logs.
+
+## Troubleshooting
+
+If the connection fails, check:
+
+1. Is your main service running?
+2. Is port 8080 properly exposed in your main service?
+3. Does your main service have an API endpoint at `/api`?
+
+You can modify the hostname, port, and path in `test-internal-connection.js` to test different endpoints.
+
+## 部署指南
+
+### Zeabur 部署
+
+本專案支持在 Zeabur 平台上進行部署，可以使用以下方法之一進行部署：
+
+#### 方法一：使用 GitHub 集成
+
+1. 在 Zeabur 控制台中創建新專案
+2. 點擊"添加服務"，選擇"GitHub"
+3. 選擇您的儲存庫和分支
+4. 設置環境變數:
+   - `DB_HOST` - 數據庫主機
+   - `DB_PORT` - 數據庫端口
+   - `DB_NAME` - 數據庫名稱
+   - `DB_USER` - 數據庫用戶名
+   - `DB_PASS` - 數據庫密碼
+   - `JWT_SECRET` - JWT 密鑰
+   - `NODE_ENV` - 設置為 "production"
+
+#### 方法二：使用 Docker 部署
+
+1. 構建 Docker 映像
+```bash
+cd backend
+docker build -t checkin-system-backend .
+```
+
+2. 在 Zeabur 中部署 Docker 映像
+   - 添加服務 > 選擇"Docker"
+   - 輸入映像名稱
+   - 設置環境變數
+
+#### 方法三：使用配置文件
+
+您可以使用專案根目錄中的 `zeabur.toml` 和 `.zeabur.json` 配置文件來自動部署。
+
+詳細部署說明請參閱 [ZEABUR_DEPLOYMENT.md](./ZEABUR_DEPLOYMENT.md) 文件。 
