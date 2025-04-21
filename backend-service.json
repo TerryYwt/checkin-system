@@ -1,0 +1,20 @@
+{
+  "name": "checkin-system-backend",
+  "builder": "docker",
+  "buildConfig": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "noCache": false
+  },
+  "port": 3000,
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "3000",
+    "DB_HOST": "YOUR_DB_HOST",
+    "DB_PORT": "3306",
+    "DB_NAME": "checkin_system",
+    "DB_USER": "YOUR_DB_USER",
+    "DB_PASS": "YOUR_DB_PASSWORD",
+    "JWT_SECRET": "YOUR_JWT_SECRET"
+  }
+} 

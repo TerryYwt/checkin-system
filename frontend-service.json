@@ -1,0 +1,14 @@
+{
+  "name": "checkin-system-frontend",
+  "builder": "docker",
+  "buildConfig": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "noCache": false
+  },
+  "port": 80,
+  "env": {
+    "NODE_ENV": "production",
+    "VITE_API_URL": "https://checkin-system.zeabur.app/api"
+  }
+} 

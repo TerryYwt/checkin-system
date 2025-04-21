@@ -1,0 +1,86 @@
+{
+  "project": {
+    "name": "checkin-system",
+    "region": "hnd1",
+    "description": "Check-in System with Vue frontend and Node.js backend"
+  },
+  "services": [
+    {
+      "name": "checkin-system-backend",
+      "type": "dockerfile",
+      "source": {
+        "type": "github",
+        "repository": "TerryYwt/checkin-system",
+        "branch": "main",
+        "directory": "backend"
+      },
+      "dockerfile": "Dockerfile",
+      "port": 3000,
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": "3000",
+        "DB_HOST": "YOUR_DB_HOST",
+        "DB_PORT": "3306",
+        "DB_NAME": "checkin_system",
+        "DB_USER": "YOUR_DB_USER",
+        "DB_PASS": "YOUR_DB_PASSWORD",
+        "JWT_SECRET": "YOUR_JWT_SECRET"
+      },
+      "resources": {
+        "cpu": 1,
+        "memory": 512
+      },
+      "healthCheck": {
+        "path": "/api/health",
+        "port": 3000,
+        "initialDelay": 10,
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3
+      }
+    },
+    {
+      "name": "checkin-system-frontend",
+      "type": "dockerfile",
+      "source": {
+        "type": "github",
+        "repository": "TerryYwt/checkin-system",
+        "branch": "main",
+        "directory": "frontend"
+      },
+      "dockerfile": "Dockerfile",
+      "port": 80,
+      "env": {
+        "NODE_ENV": "production",
+        "VITE_API_URL": "https://checkin-system.zeabur.app/api"
+      },
+      "resources": {
+        "cpu": 0.5,
+        "memory": 256
+      }
+    }
+  ],
+  "domains": [
+    {
+      "name": "checkin-system.zeabur.app",
+      "service": "checkin-system-frontend",
+      "port": 80
+    },
+    {
+      "name": "api.checkin-system.zeabur.app",
+      "service": "checkin-system-backend",
+      "port": 3000
+    }
+  ],
+  "networkRules": [
+    {
+      "from": "checkin-system-frontend",
+      "to": "checkin-system-backend",
+      "port": 3000
+    }
+  ],
+  "buildSettings": {
+    "useCache": true,
+    "autoDeploy": true
+  }
+} 
