@@ -1,16 +1,15 @@
 const { User } = require('../models');
 const bcryptjs = require('bcryptjs');
-const testAccounts = require('../config/test-accounts');
 
 async function resetPassword() {
   try {
     // Find the merchant user
     const user = await User.findOne({
-      where: { username: testAccounts.merchant.username }
+      where: { username: 'testmerchant2' }
     });
     
     if (!user) {
-      console.log(`User ${testAccounts.merchant.username} not found`);
+      console.log('User testmerchant2 not found');
       return;
     }
     
@@ -21,14 +20,15 @@ async function resetPassword() {
       role: user.role
     });
     
-    // Reset password using bcryptjs
-    const hashedPassword = await bcryptjs.hash(process.env.TEST_MERCHANT_PASSWORD, 10);
-    await user.update({ password: hashedPassword });
+    // Set a new password
+    const newPassword = 'Test@123456';
+    user.password = newPassword;
+    await user.save();
     
     console.log('Password reset successful');
     console.log('Login credentials:');
-    console.log(`Username: ${testAccounts.merchant.username}`);
-    console.log('Password: (stored in environment variables)');
+    console.log('Username: testmerchant2');
+    console.log('Password:', newPassword);
     
   } catch (error) {
     console.error('Error:', error);

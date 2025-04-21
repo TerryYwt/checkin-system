@@ -12,6 +12,6 @@ router.use('/auth', authRoutes);
 // Protected routes
 router.use('/users', authenticateToken, userRoutes);
 router.use('/admin', authenticateToken, adminRoutes);
-router.use('/merchant/settings', merchantSettingsRoutes);
+router.use('/merchant/settings', authenticateToken, merchantSettingsRoutes);
 
 module.exports = router; 

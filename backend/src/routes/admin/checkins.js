@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
       where.status = status;
     }
     if (startDate && endDate) {
-      where.checkinTime = {
+      where.checkin_time = {
         [Op.between]: [new Date(startDate), new Date(endDate)]
       };
     }
@@ -66,7 +66,7 @@ router.get('/', async (req, res) => {
       ],
       offset,
       limit: parseInt(limit),
-      order: [['checkinTime', 'DESC']]
+      order: [['checkin_time', 'DESC']]
     });
 
     res.json({

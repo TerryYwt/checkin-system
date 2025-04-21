@@ -257,14 +257,14 @@ exports.getRecentActivities = async (req, res) => {
           }]
         }
       ],
-      order: [['checkinTime', 'DESC']],
+      order: [['checkin_time', 'DESC']],
       limit: 10
     });
 
     // Format the response to match the frontend expectations
     const formattedActivities = activities.map(activity => ({
       id: activity.id,
-      time: activity.checkinTime,
+      time: activity.checkin_time,
       type: 'checkin',
       content: `${activity.checkinUser.username} 在 ${activity.checkinStore.name} 簽到`
     }));

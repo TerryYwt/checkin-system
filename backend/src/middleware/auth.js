@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const { User } = require('../models')
+const { User, Merchant } = require('../models')
 
 // 驗證 JWT token
 const authenticateToken = (req, res, next) => {
@@ -78,12 +78,25 @@ const requireAdmin = (req, res, next) => {
 }
 
 // 驗證商戶權限
-const requireMerchant = (req, res, next) => {
+const requireMerchant = async (req, res, next) => {
   if (req.user.role !== 'merchant') {
-    return res.status(403).json({ error: '需要商戶權限' })
+    return res.status(403).json({ error: '需要商戶權限' });
   }
-  next()
-}
+
+  try {
+    const merchant = await Merchant.findOne({ where: { userId: req.user.id } });
+    
+    if (!merchant) {
+      return res.status(403).json({ error: '找不到商戶資料' });
+    }
+    
+    req.user.merchant = merchant;
+    next();
+  } catch (error) {
+    console.error('Error in requireMerchant middleware:', error);
+    res.status(500).json({ error: '服務器錯誤' });
+  }
+};
 
 module.exports = {
   authenticateToken,

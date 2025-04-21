@@ -19,6 +19,8 @@ const adminSettingsRoutes = require('./routes/admin/settings');
 const adminQRCodeRoutes = require('./routes/admin/qrCodes');
 const adminCampaignRoutes = require('./routes/admin/campaigns');
 const analyticsRoutes = require('./routes/analytics');
+const merchantSettingsRoutes = require('./routes/merchant/settings');
+const mainRoutes = require('./routes');
 
 const app = express();
 
@@ -31,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Base routes
+app.use('/api', mainRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/merchants', merchantRoutes);
@@ -38,6 +41,7 @@ app.use('/api/stores', storeRoutes);
 app.use('/api/qr-codes', qrCodeRoutes);
 app.use('/api/checkins', checkinRoutes);
 app.use('/api/campaigns', campaignRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Admin routes
 const adminRouter = express.Router();

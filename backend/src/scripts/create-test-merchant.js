@@ -5,12 +5,12 @@ const testAccounts = require('../config/test-accounts');
 async function createTestMerchant() {
   try {
     // Create user account
-    const hashedPassword = await bcryptjs.hash(process.env.TEST_MERCHANT_PASSWORD, 10);
+    const hashedPassword = await bcryptjs.hash('testpassword', 10);
     const user = await User.create({
-      username: testAccounts.merchant.username,
-      email: testAccounts.merchant.email,
+      username: 'testmerchant3',
+      email: 'merchant3@test.com',
       password: hashedPassword,
-      role: testAccounts.merchant.role,
+      role: 'merchant',
       status: 'active'
     });
 
@@ -29,7 +29,7 @@ async function createTestMerchant() {
       businessType: '零售',
       contactPerson: '測試聯絡人',
       phone: '0912345678',
-      email: testAccounts.merchant.email,
+      email: 'merchant3@test.com',
       address: '測試地址',
       status: 'active'
     });
@@ -60,9 +60,9 @@ async function createTestMerchant() {
 
     console.log('\nTest merchant account created successfully!');
     console.log('Login credentials:');
-    console.log(`Username: ${testAccounts.merchant.username}`);
-    console.log('Password: (stored in environment variables)');
-    console.log(`Email: ${testAccounts.merchant.email}`);
+    console.log('Username: testmerchant3');
+    console.log('Password: testpassword');
+    console.log('Email: merchant3@test.com');
 
   } catch (error) {
     console.error('Error creating test merchant:', error);

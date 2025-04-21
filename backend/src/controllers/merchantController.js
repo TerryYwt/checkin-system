@@ -30,7 +30,7 @@ exports.handleCheckin = async (req, res) => {
       where: {
         userId: user.id,
         merchantId: merchantId,
-        checkinTime: {
+        checkin_time: {
           [Op.between]: [today, tomorrow]
         }
       }
@@ -47,7 +47,7 @@ exports.handleCheckin = async (req, res) => {
     const checkin = await Checkin.create({
       userId: user.id,
       merchantId: merchantId,
-      checkinTime: new Date(),
+      checkin_time: new Date(),
       method: method,
       status: 'success'
     });
@@ -61,7 +61,7 @@ exports.handleCheckin = async (req, res) => {
       },
       checkin: {
         id: checkin.id,
-        time: checkin.checkinTime
+        time: checkin.checkin_time
       }
     });
 

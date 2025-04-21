@@ -11,7 +11,7 @@ router.use(requireAdmin);
 // Get all campaigns with pagination and filtering
 router.get('/', async (req, res) => {
   try {
-    const { page = 1, limit = 10, search = '', type = '', status, storeId, merchantId } = req.query
+    const { page = 1, limit = 10, search = '', type = '', status, store_id, merchant_id } = req.query
     const offset = (page - 1) * limit
 
     const where = {}
@@ -27,8 +27,8 @@ router.get('/', async (req, res) => {
     if (status) {
       where.status = status
     }
-    if (storeId) {
-      where.storeId = storeId
+    if (store_id) {
+      where.store_id = store_id
     }
 
     const include = [
@@ -56,8 +56,8 @@ router.get('/', async (req, res) => {
       }
     ]
 
-    if (merchantId) {
-      include[0].where = { merchantId }
+    if (merchant_id) {
+      include[0].where = { merchant_id }
     }
 
     const { count, rows } = await Campaign.findAndCountAll({
@@ -65,7 +65,7 @@ router.get('/', async (req, res) => {
       include,
       offset,
       limit: parseInt(limit),
-      order: [['createdAt', 'DESC']]
+      order: [['created_at', 'DESC']]
     })
 
     res.json({
@@ -83,10 +83,10 @@ router.get('/', async (req, res) => {
 // Create new campaign
 router.post('/', async (req, res) => {
   try {
-    const { name, type, description, startDate, endDate, storeId, rules, rewards, targetAudience } = req.body
+    const { name, type, description, start_date, end_date, store_id, rules, rewards, target_audience } = req.body
 
     // Check if store exists
-    const store = await Store.findByPk(storeId, {
+    const store = await Store.findByPk(store_id, {
       include: [{
         model: Merchant,
         as: 'merchant'
@@ -100,13 +100,13 @@ router.post('/', async (req, res) => {
       name,
       type,
       description,
-      startDate,
-      endDate,
-      storeId,
+      start_date,
+      end_date,
+      store_id,
       rules,
       rewards,
-      targetAudience,
-      createdBy: req.user.id,
+      target_audience,
+      created_by: req.user.id,
       status: 'draft'
     })
 
@@ -149,16 +149,16 @@ router.post('/', async (req, res) => {
 // Update campaign
 router.put('/:id', async (req, res) => {
   try {
-    const { name, type, description, startDate, endDate, storeId, rules, rewards, targetAudience, status } = req.body
+    const { name, type, description, start_date, end_date, store_id, rules, rewards, target_audience, status } = req.body
     const campaign = await Campaign.findByPk(req.params.id)
 
     if (!campaign) {
       return res.status(404).json({ message: 'Campaign not found' })
     }
 
-    // Check if store exists if storeId is being updated
-    if (storeId && storeId !== campaign.storeId) {
-      const store = await Store.findByPk(storeId)
+    // Check if store exists if store_id is being updated
+    if (store_id && store_id !== campaign.store_id) {
+      const store = await Store.findByPk(store_id)
       if (!store) {
         return res.status(404).json({ message: 'Store not found' })
       }
@@ -168,12 +168,12 @@ router.put('/:id', async (req, res) => {
       name,
       type,
       description,
-      startDate,
-      endDate,
-      storeId,
+      start_date,
+      end_date,
+      store_id,
       rules,
       rewards,
-      targetAudience,
+      target_audience,
       status
     })
 

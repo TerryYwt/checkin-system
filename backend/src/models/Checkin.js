@@ -7,36 +7,36 @@ module.exports = (sequelize) => {
       primaryKey: true,
       autoIncrement: true
     },
-    userId: {
+    user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Users',
+        model: 'users',
         key: 'id'
       }
     },
-    storeId: {
+    store_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Stores',
+        model: 'stores',
         key: 'id'
       }
     },
-    campaignId: {
+    campaign_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'Campaigns',
+        model: 'campaigns',
         key: 'id'
       }
     },
-    checkinTime: {
+    checkin_time: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW
     },
-    pointsEarned: {
+    points_earned: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
@@ -55,34 +55,36 @@ module.exports = (sequelize) => {
       allowNull: true
     }
   }, {
+    tableName: 'checkins',
     timestamps: true,
+    underscored: true,
     indexes: [
       {
-        fields: ['userId']
+        fields: ['user_id']
       },
       {
-        fields: ['storeId']
+        fields: ['store_id']
       },
       {
-        fields: ['campaignId']
+        fields: ['campaign_id']
       },
       {
-        fields: ['checkinTime']
+        fields: ['checkin_time']
       }
     ]
   });
 
   Checkin.associate = (models) => {
     Checkin.belongsTo(models.User, {
-      foreignKey: 'userId',
+      foreignKey: 'user_id',
       as: 'checkinUser'
     });
     Checkin.belongsTo(models.Store, {
-      foreignKey: 'storeId',
+      foreignKey: 'store_id',
       as: 'checkinStore'
     });
     Checkin.belongsTo(models.Campaign, {
-      foreignKey: 'campaignId',
+      foreignKey: 'campaign_id',
       as: 'campaign',
       allowNull: true
     });

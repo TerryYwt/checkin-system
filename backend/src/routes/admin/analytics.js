@@ -32,7 +32,7 @@ router.get('/checkins', authenticateToken, requireAdmin, async (req, res) => {
     const whereClause = {};
     
     if (startDate && endDate) {
-      whereClause.checkinTime = {
+      whereClause.checkin_time = {
         [Op.between]: [new Date(startDate), new Date(endDate)]
       };
     }
@@ -54,11 +54,11 @@ router.get('/checkins', authenticateToken, requireAdmin, async (req, res) => {
     const checkinsByDate = await Checkin.findAll({
       where: whereClause,
       attributes: [
-        [sequelize.fn('DATE', sequelize.col('checkinTime')), 'date'],
+        [sequelize.fn('DATE', sequelize.col('checkin_time')), 'date'],
         [sequelize.fn('COUNT', sequelize.col('id')), 'count']
       ],
-      group: [sequelize.fn('DATE', sequelize.col('checkinTime'))],
-      order: [[sequelize.fn('DATE', sequelize.col('checkinTime')), 'ASC']]
+      group: [sequelize.fn('DATE', sequelize.col('checkin_time'))],
+      order: [[sequelize.fn('DATE', sequelize.col('checkin_time')), 'ASC']]
     });
     
     res.json({
@@ -109,7 +109,7 @@ router.get('/store-rankings', authenticateToken, requireAdmin, async (req, res) 
     if (period) {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - parseInt(period));
-      whereClause.checkinTime = {
+      whereClause.checkin_time = {
         [Op.gte]: startDate
       };
     }

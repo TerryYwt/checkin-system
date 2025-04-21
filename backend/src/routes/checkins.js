@@ -62,7 +62,7 @@ router.post('/', authenticateToken, async (req, res) => {
       userId,
       storeId,
       qrCodeId,
-      checkinTime: new Date()
+      checkin_time: new Date()
     });
     
     res.status(201).json(checkin);

@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { sequelize } = require('../config/sequelize');
+const sequelize = require('../config/sequelize');
 const { User } = require('../models');
 const bcryptjs = require('bcryptjs');
 
@@ -9,24 +9,27 @@ async function checkUser() {
     console.log('Database connection successful.');
 
     const user = await User.findOne({
-      where: { username: 'testadmin' },
+      where: { username: 'testmerchant2' },
       attributes: { include: ['password'] }
     });
 
     if (!user) {
-      console.log('Test user not found');
+      console.log('Test merchant not found');
       return;
     }
 
-    console.log('Test user found:', {
+    console.log('Test merchant found:', {
       username: user.username,
       role: user.role,
-      status: user.status
+      status: user.status,
+      password: user.password // Show the hashed password
     });
 
     // Verify password
-    const isValid = await bcryptjs.compare('Test@123', user.password);
+    const testPassword = 'Test@123456';
+    const isValid = await bcryptjs.compare(testPassword, user.password);
     console.log('Password verification:', isValid ? 'Valid' : 'Invalid');
+    console.log('Test password used:', testPassword);
 
   } catch (error) {
     console.error('Error:', error);

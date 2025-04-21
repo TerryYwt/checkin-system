@@ -20,6 +20,7 @@ const adminSettingsRoutes = require('./routes/admin/settings');
 const adminQRCodeRoutes = require('./routes/admin/qrCodes');
 const adminCampaignRoutes = require('./routes/admin/campaigns');
 const analyticsRoutes = require('./routes/analytics');
+const mainRoutes = require('./routes');
 
 const sequelize = require('./config/sequelize');
 const { User } = require('./models');
@@ -84,12 +85,7 @@ app.use((req, res, next) => {
 });
 
 // Base routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/merchants', merchantRoutes);
-app.use('/api/stores', storeRoutes);
-app.use('/api/qr-codes', qrCodeRoutes);
-app.use('/api/checkins', checkinRoutes);
+app.use('/api', mainRoutes);
 
 // Admin routes
 const adminRouter = express.Router();

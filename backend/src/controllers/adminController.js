@@ -1,3 +1,5 @@
+const db = require('../models');
+
 // Get merchant by ID
 exports.getMerchantById = async (req, res) => {
   try {
