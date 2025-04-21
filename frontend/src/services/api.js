@@ -2,7 +2,7 @@ import axios from 'axios'
 import { objectToCamelCase, objectToSnakeCase } from '../utils/case-converter'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json'
   }

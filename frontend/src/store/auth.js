@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import api from '../services/api'
 
 // 初始化 axios 默認請求頭
 const token = localStorage.getItem('token')
@@ -24,7 +25,7 @@ export const useAuthStore = defineStore('auth', {
     async login(username, password, rememberMe = false) {
       try {
         console.log('Attempting login with:', { username, rememberMe })
-        const response = await axios.post('/api/auth/login', { 
+        const response = await api.post('/auth/login', { 
           username, 
           password,
           rememberMe 
@@ -83,7 +84,7 @@ export const useAuthStore = defineStore('auth', {
       
       try {
         console.log('Checking auth with token:', this.token)
-        const response = await axios.get('/api/auth/me')
+        const response = await api.get('/auth/me')
         this.user = response.data
         localStorage.setItem('user', JSON.stringify(response.data))
         return true
@@ -99,7 +100,7 @@ export const useAuthStore = defineStore('auth', {
     
     async resetPassword(oldPassword, newPassword) {
       try {
-        await axios.post('/api/auth/reset-password', {
+        await api.post('/auth/reset-password', {
           username: this.user.username,
           oldPassword,
           newPassword

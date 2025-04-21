@@ -8,7 +8,7 @@ import { createPinia } from 'pinia'
 import { useAuthStore } from './store/auth'
 
 // Configure Axios
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL
+axios.defaults.baseURL = import.meta.env.VITE_API_URL
 
 // 從 localStorage 獲取 token 並設置請求頭
 const token = localStorage.getItem('token')
