@@ -1,0 +1,100 @@
+Table users {
+  id integer [primary key, increment]
+  username varchar [not null, unique]
+  trialId varchar [unique]
+  password varchar [not null]
+  email varchar [not null, unique]
+  role enum('admin', 'merchant', 'user') [not null, default: 'user']
+  status enum('active', 'inactive') [not null, default: 'active']
+  refresh_token varchar
+  last_login datetime
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+}
+
+Table merchants {
+  id integer [primary key, increment]
+  user_id integer [not null, unique]
+  business_name varchar [not null]
+  business_type varchar
+  status enum('active', 'inactive', 'pending') [not null, default: 'pending']
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+}
+
+Table stores {
+  id integer [primary key, increment]
+  merchant_id integer [not null]
+  name varchar [not null]
+  address varchar [not null]
+  phone varchar
+  status enum('active', 'inactive') [not null, default: 'active']
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+}
+
+Table campaigns {
+  id integer [primary key, increment]
+  merchant_id integer [not null]
+  name varchar [not null]
+  description text
+  type enum('discount', 'points', 'gift', 'trial') [not null]
+  start_date datetime [not null]
+  end_date datetime [not null]
+  status enum('draft', 'active', 'paused', 'completed', 'cancelled') [not null, default: 'draft']
+  rules json
+  rewards json
+  target_audience json
+  budget decimal(10,2)
+  spent decimal(10,2) [not null, default: 0]
+  metrics json
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+}
+
+Table qrcodes {
+  id integer [primary key, increment]
+  store_id integer [not null]
+  campaign_id integer
+  created_by integer [not null]
+  type enum('store', 'campaign', 'trial') [not null, default: 'store']
+  content varchar [not null]
+  status enum('active', 'inactive', 'expired') [not null, default: 'active']
+  expires_at datetime
+  scan_limit integer
+  scan_count integer [not null, default: 0]
+  metadata json
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+}
+
+Table checkins {
+  id integer [primary key, increment]
+  user_id integer [not null]
+  store_id integer [not null]
+  qrcode_id integer [not null]
+  campaign_id integer
+  points_earned integer [not null, default: 0]
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+}
+
+Table settings {
+  id integer [primary key, increment]
+  key varchar [not null, unique]
+  value json [not null]
+  description text
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+}
+
+Ref: merchants.user_id > users.id
+Ref: stores.merchant_id > merchants.id
+Ref: campaigns.merchant_id > merchants.id
+Ref: qrcodes.store_id > stores.id
+Ref: qrcodes.campaign_id > campaigns.id
+Ref: qrcodes.created_by > users.id
+Ref: checkins.user_id > users.id
+Ref: checkins.store_id > stores.id
+Ref: checkins.qrcode_id > qrcodes.id
+Ref: checkins.campaign_id > campaigns.id 

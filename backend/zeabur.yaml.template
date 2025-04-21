@@ -1,0 +1,20 @@
+service:
+  name: checkin-backend
+  port: 3000
+  env:
+    - name: DB_HOST
+      value: ${MYSQL_HOST}
+    - name: DB_PORT
+      value: ${MYSQL_PORT}
+    - name: DB_NAME
+      value: ${MYSQL_DATABASE}
+    - name: DB_USER
+      value: ${MYSQL_USER}
+    - name: DB_PASSWORD
+      value: ${MYSQL_PASSWORD}
+    - name: JWT_SECRET
+      value: ${JWT_SECRET}
+    - name: TEST_ADMIN_PASSWORD
+      value: ${TEST_ADMIN_PASSWORD}
+    - name: TEST_MERCHANT_PASSWORD
+      value: ${TEST_MERCHANT_PASSWORD} 

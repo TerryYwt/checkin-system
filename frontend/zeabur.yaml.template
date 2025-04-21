@@ -1,0 +1,6 @@
+service:
+  name: checkin-frontend
+  port: 80
+  env:
+    - name: VITE_API_URL
+      value: ${API_URL} 
