@@ -3,18 +3,17 @@ FROM node:18-alpine as build
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
-
-# Install dependencies with explicit vite installation
-RUN npm install
-RUN npm install -g vite @vitejs/plugin-vue
-
-# Copy the rest of the code
+# Copy source files
 COPY . .
 
-# Build the app with an explicit command
-RUN npx vite build
+# Use the zeabur-package.json which has vite in dependencies
+COPY zeabur-package.json package.json
+
+# Install dependencies from modified package.json
+RUN npm install
+
+# Build the application (vite should now be in node_modules)
+RUN npm run build
 
 # Production stage
 FROM nginx:alpine
