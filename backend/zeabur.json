@@ -1,0 +1,21 @@
+{
+  "name": "checkin-system-backend",
+  "type": "node",
+  "build": {
+    "command": "npm install",
+    "output": "."
+  },
+  "start": {
+    "command": "npm start"
+  },
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "3000"
+  },
+  "ports": [
+    {
+      "port": 3000,
+      "protocol": "http"
+    }
+  ]
+} 
