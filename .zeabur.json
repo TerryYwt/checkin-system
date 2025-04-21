@@ -1,0 +1,16 @@
+{
+  "name": "checkin-system-backend",
+  "type": "node",
+  "builder": "node",
+  "framework": "express",
+  "packageManager": "yarn",
+  "installCommand": "yarn install",
+  "buildCommand": "yarn build",
+  "startCommand": "yarn start",
+  "workdir": "backend",
+  "port": 3000,
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "3000"
+  }
+} 
