@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const qrcode = require('qrcode');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+const bcryptjs = require('bcryptjs');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -54,9 +55,11 @@ const initializeDatabase = async () => {
         const adminUser = await User.findOne({ where: { username: 'testadmin' } });
         
         if (!adminUser) {
+          const adminPassword = process.env.TEST_ADMIN_PASSWORD || 'Admin@123456';
+          const hashedAdminPassword = await bcryptjs.hash(adminPassword, 10);
           await User.create({
             username: 'testadmin',
-            password: 'Test@123',
+            password: hashedAdminPassword,
             role: 'admin',
             email: 'admin@test.com',
             status: 'active'
@@ -64,6 +67,23 @@ const initializeDatabase = async () => {
           console.log('Test admin user created');
         } else {
           console.log('Test admin user already exists');
+        }
+
+        const merchantUser = await User.findOne({ where: { username: 'testmerchant' } });
+        
+        if (!merchantUser) {
+          const merchantPassword = process.env.TEST_MERCHANT_PASSWORD || 'Merchant@123456';
+          const hashedMerchantPassword = await bcryptjs.hash(merchantPassword, 10);
+          await User.create({
+            username: 'testmerchant',
+            password: hashedMerchantPassword,
+            role: 'merchant',
+            email: 'merchant@test.com',
+            status: 'active'
+          });
+          console.log('Test merchant user created');
+        } else {
+          console.log('Test merchant user already exists');
         }
       } catch (userError) {
         console.error('Error during user operations:', userError);
@@ -169,9 +189,14 @@ function logDatabaseConfig() {
   console.log(`DB_NAME: ${process.env.DB_NAME || process.env.ZEABUR_DB_NAME || 'checkin_system'}`);
   console.log(`DB_USER: ${process.env.DB_USER || process.env.ZEABUR_DB_USER || 'root'}`);
   console.log(`DB_PASS: ${process.env.DB_PASS ? '[PROVIDED]' : '[NOT PROVIDED]'}`);
+  
+  console.log('\nTest Account Configuration:');
+  console.log(`TEST_ADMIN_PASSWORD: ${process.env.TEST_ADMIN_PASSWORD ? '[PROVIDED]' : '[NOT PROVIDED]'}`);
+  console.log(`TEST_MERCHANT_PASSWORD: ${process.env.TEST_MERCHANT_PASSWORD ? '[PROVIDED]' : '[NOT PROVIDED]'}`);
 }
 
 initializeDatabase().then(() => {
+  logDatabaseConfig();
   server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Server environment: ${process.env.NODE_ENV || 'development'}`);
