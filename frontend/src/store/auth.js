@@ -1,12 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
 import api from '../services/api'
-
-// 初始化 axios 默認請求頭
-const token = localStorage.getItem('token')
-if (token) {
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-}
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -47,9 +40,6 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem('user', JSON.stringify(user))
         localStorage.setItem('rememberMe', rememberMe)
         
-        // 設置 axios 默認請求頭
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-        
         console.log('Login successful, token stored:', {
           storedToken: localStorage.getItem('token'),
           storeToken: this.token
@@ -72,8 +62,6 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       localStorage.removeItem('rememberMe')
-      
-      delete axios.defaults.headers.common['Authorization']
     },
     
     async checkAuth() {
