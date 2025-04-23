@@ -210,7 +210,7 @@ const rules = {
 const fetchUsers = async () => {
   loading.value = true
   try {
-    const response = await axios.get('/api/admin/users', {
+    const response = await axios.get('/admin/users', {
       params: {
         page: currentPage.value,
         pageSize: pageSize.value,
@@ -269,13 +269,13 @@ const submitForm = async () => {
     if (valid) {
       try {
         if (isEdit.value) {
-          await axios.put(`/api/admin/users/${form.id}`, {
+          await axios.put(`/admin/users/${form.id}`, {
             ...form,
             password: undefined
           })
           ElMessage.success('用戶更新成功')
         } else {
-          await axios.post('/api/admin/users', form)
+          await axios.post('/admin/users', form)
           ElMessage.success('用戶創建成功')
         }
         dialogVisible.value = false
@@ -291,7 +291,7 @@ const submitForm = async () => {
 const toggleStatus = async (row) => {
   try {
     const newStatus = row.status === 'active' ? 'inactive' : 'active'
-    await axios.put(`/api/admin/users/${row.id}`, {
+    await axios.put(`/admin/users/${row.id}`, {
       ...row,
       status: newStatus
     })
@@ -315,7 +315,7 @@ const resetPassword = async (row) => {
       }
     )
     
-    await axios.post(`/api/admin/users/${row.id}/reset-password`)
+    await axios.post(`/admin/users/${row.id}/reset-password`)
     ElMessage.success('密碼重置成功')
   } catch (error) {
     if (error !== 'cancel') {
