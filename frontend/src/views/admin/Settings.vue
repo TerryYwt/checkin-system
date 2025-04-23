@@ -212,9 +212,9 @@ const securityRules = {
 const fetchSettings = async () => {
   try {
     const [basicResponse, emailResponse, securityResponse] = await Promise.all([
-      axios.get('/api/admin/settings/basic'),
-      axios.get('/api/admin/settings/email'),
-      axios.get('/api/admin/settings/security')
+      axios.get('/admin/settings/basic'),
+      axios.get('/admin/settings/email'),
+      axios.get('/admin/settings/security')
     ])
     
     basicForm.value = basicResponse.data
@@ -231,7 +231,7 @@ const handleBasicSubmit = async () => {
   
   try {
     await basicFormRef.value.validate()
-    await axios.post('/api/admin/settings/basic', basicForm.value)
+    await axios.post('/admin/settings/basic', basicForm.value)
     ElMessage.success('保存成功')
   } catch (error) {
     if (error !== 'cancel') {
@@ -246,7 +246,7 @@ const handleEmailSubmit = async () => {
   
   try {
     await emailFormRef.value.validate()
-    await axios.post('/api/admin/settings/email', emailForm.value)
+    await axios.post('/admin/settings/email', emailForm.value)
     ElMessage.success('保存成功')
   } catch (error) {
     if (error !== 'cancel') {
@@ -258,7 +258,7 @@ const handleEmailSubmit = async () => {
 // 發送測試郵件
 const handleTestEmail = async () => {
   try {
-    await axios.post('/api/admin/settings/email/test')
+    await axios.post('/admin/settings/email/test')
     ElMessage.success('測試郵件發送成功')
   } catch (error) {
     ElMessage.error('測試郵件發送失敗')
@@ -271,7 +271,7 @@ const handleSecuritySubmit = async () => {
   
   try {
     await securityFormRef.value.validate()
-    await axios.post('/api/admin/settings/security', securityForm.value)
+    await axios.post('/admin/settings/security', securityForm.value)
     ElMessage.success('保存成功')
   } catch (error) {
     if (error !== 'cancel') {

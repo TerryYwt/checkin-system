@@ -186,7 +186,7 @@ const passwordRules = {
 // 初始化數據
 const fetchSettings = async () => {
   try {
-    const response = await axios.get('/api/merchant/settings')
+    const response = await axios.get('/merchant/settings')
     const data = response.data
     
     basicForm.value = {
@@ -213,7 +213,7 @@ const handleBasicSubmit = async () => {
   
   try {
     await basicFormRef.value.validate()
-    await axios.post('/api/merchant/settings/basic', basicForm.value)
+    await axios.post('/merchant/settings/basic', basicForm.value)
     ElMessage.success('保存成功')
   } catch (error) {
     if (error !== 'cancel') {
@@ -228,7 +228,7 @@ const handlePasswordSubmit = async () => {
   
   try {
     await passwordFormRef.value.validate()
-    await axios.post('/api/merchant/settings/password', {
+    await axios.post('/merchant/settings/password', {
       currentPassword: passwordForm.value.currentPassword,
       newPassword: passwordForm.value.newPassword
     })
@@ -248,7 +248,7 @@ const handlePasswordSubmit = async () => {
 // 提交通知設置
 const handleNotificationSubmit = async () => {
   try {
-    await axios.post('/api/merchant/settings/notifications', notificationForm.value)
+    await axios.post('/merchant/settings/notifications', notificationForm.value)
     ElMessage.success('保存成功')
   } catch (error) {
     ElMessage.error('保存失敗')

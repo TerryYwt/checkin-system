@@ -84,7 +84,7 @@ let camera = null
 // 處理 QR Code 掃描結果
 const onDecode = async (result) => {
   try {
-    const response = await axios.post('/api/merchant/checkin', {
+    const response = await axios.post('/merchant/checkin', {
       trialId: result,
       method: 'qr'
     })
@@ -140,7 +140,7 @@ const handleManualCheckIn = async () => {
   }
 
   try {
-    const response = await axios.post('/api/merchant/checkin', {
+    const response = await axios.post('/merchant/checkin', {
       trialId: form.value.trialId,
       method: 'manual'
     })

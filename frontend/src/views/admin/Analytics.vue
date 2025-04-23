@@ -155,7 +155,7 @@ watch(storeRankingType, () => {
 // 獲取概覽數據
 const fetchOverviewData = async () => {
   try {
-    const response = await axios.get('/api/admin/analytics/overview')
+    const response = await axios.get('/admin/analytics/overview')
     overviewCards.value = response.data
   } catch (error) {
     ElMessage.error('獲取概覽數據失敗')
@@ -165,7 +165,7 @@ const fetchOverviewData = async () => {
 // 獲取趨勢數據
 const fetchTrendData = async () => {
   try {
-    const response = await axios.get('/api/admin/analytics/trend', {
+    const response = await axios.get('/admin/analytics/trend', {
       params: { timeRange: trendTimeRange.value }
     })
     
@@ -208,7 +208,7 @@ const fetchTrendData = async () => {
 // 獲取分布數據
 const fetchDistributionData = async () => {
   try {
-    const response = await axios.get('/api/admin/analytics/distribution')
+    const response = await axios.get('/admin/analytics/distribution')
     
     const option = {
       tooltip: {
@@ -244,7 +244,7 @@ const fetchDistributionData = async () => {
 // 獲取商店排名
 const fetchStoreRankings = async () => {
   try {
-    const response = await axios.get('/api/admin/analytics/store-rankings', {
+    const response = await axios.get('/admin/analytics/store-rankings', {
       params: { type: storeRankingType.value }
     })
     storeRankings.value = response.data
@@ -256,7 +256,7 @@ const fetchStoreRankings = async () => {
 // 獲取最近活動
 const fetchRecentActivities = async () => {
   try {
-    const response = await axios.get('/api/admin/analytics/recent-activities')
+    const response = await axios.get('/admin/analytics/recent-activities')
     recentActivities.value = response.data
   } catch (error) {
     ElMessage.error('獲取最近活動失敗')

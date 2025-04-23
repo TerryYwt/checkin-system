@@ -239,7 +239,7 @@ const rules = {
 const fetchMerchantDetails = async () => {
   try {
     loading.value = true
-    const response = await axios.get(`/api/admin/merchants/${merchantId.value}`)
+    const response = await axios.get(`/admin/merchants/${merchantId.value}`)
     merchant.value = response.data
     
     // 填充表單數據
@@ -260,7 +260,7 @@ const fetchMerchantDetails = async () => {
 // 獲取商戶統計數據
 const fetchMerchantStats = async () => {
   try {
-    const response = await axios.get(`/api/admin/merchants/${merchantId.value}/stats`)
+    const response = await axios.get(`/admin/merchants/${merchantId.value}/stats`)
     stats.value = response.data
   } catch (error) {
     console.error('Error fetching merchant stats:', error)
@@ -271,7 +271,7 @@ const fetchMerchantStats = async () => {
 const fetchRecentActivities = async () => {
   try {
     loadingActivities.value = true
-    const response = await axios.get(`/api/admin/merchants/${merchantId.value}/activities?limit=5`)
+    const response = await axios.get(`/admin/merchants/${merchantId.value}/activities?limit=5`)
     recentActivities.value = response.data
     loadingActivities.value = false
   } catch (error) {
@@ -303,7 +303,7 @@ const submitForm = async () => {
   await formRef.value.validate(async (valid) => {
     if (valid) {
       try {
-        const response = await axios.put(`/api/admin/merchants/${merchantId.value}`, form)
+        const response = await axios.put(`/admin/merchants/${merchantId.value}`, form)
         
         if (response.data) {
           ElMessage.success('更新成功')
@@ -333,7 +333,7 @@ const toggleStatus = async () => {
       }
     )
     
-    const response = await axios.put(`/api/admin/merchants/${merchantId.value}/status`, {
+    const response = await axios.put(`/admin/merchants/${merchantId.value}/status`, {
       status: newStatus
     })
     

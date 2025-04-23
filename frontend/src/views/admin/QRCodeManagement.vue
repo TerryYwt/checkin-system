@@ -186,7 +186,7 @@ const fetchQRCodes = async () => {
       pageSize: pageSize.value,
       ...searchForm.value
     }
-    const response = await axios.get('/api/admin/qrcodes', { params })
+    const response = await axios.get('/admin/qrcodes', { params })
     qrcodes.value = response.data.qrcodes
     total.value = response.data.total
   } catch (error) {
@@ -199,7 +199,7 @@ const fetchQRCodes = async () => {
 // 獲取商店列表
 const fetchStores = async () => {
   try {
-    const response = await axios.get('/api/admin/stores')
+    const response = await axios.get('/admin/stores')
     stores.value = response.data.stores
   } catch (error) {
     ElMessage.error('獲取商店列表失敗')
@@ -224,7 +224,7 @@ const resetSearch = () => {
 // 下載QR碼
 const handleDownload = async (row) => {
   try {
-    const response = await axios.get(`/api/admin/qrcodes/${row.id}/download`, {
+    const response = await axios.get(`/admin/qrcodes/${row.id}/download`, {
       responseType: 'blob'
     })
     const url = window.URL.createObjectURL(new Blob([response.data]))
@@ -250,7 +250,7 @@ const handleToggleStatus = async (row) => {
         type: 'warning'
       }
     )
-    await axios.put(`/api/admin/qrcodes/${row.id}/status`, {
+    await axios.put(`/admin/qrcodes/${row.id}/status`, {
       status: row.status === 'active' ? 'inactive' : 'active'
     })
     ElMessage.success('操作成功')
@@ -268,7 +268,7 @@ const handleDelete = async (row) => {
     await ElMessageBox.confirm('確定要刪除該QR碼嗎？', '提示', {
       type: 'warning'
     })
-    await axios.delete(`/api/admin/qrcodes/${row.id}`)
+    await axios.delete(`/admin/qrcodes/${row.id}`)
     ElMessage.success('刪除成功')
     fetchQRCodes()
   } catch (error) {
@@ -284,7 +284,7 @@ const handleSubmit = async () => {
   
   try {
     await formRef.value.validate()
-    await axios.post('/api/admin/qrcodes', form.value)
+    await axios.post('/admin/qrcodes', form.value)
     ElMessage.success('生成成功')
     dialogVisible.value = false
     fetchQRCodes()

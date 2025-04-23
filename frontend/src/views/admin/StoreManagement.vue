@@ -182,7 +182,7 @@ const fetchStores = async () => {
       pageSize: pageSize.value,
       ...searchForm.value
     }
-    const response = await axios.get('/api/admin/stores', { params })
+    const response = await axios.get('/admin/stores', { params })
     stores.value = response.data.stores || []
     total.value = response.data.total || 0
   } catch (error) {
@@ -196,7 +196,7 @@ const fetchStores = async () => {
 // 獲取商戶列表
 const fetchMerchants = async () => {
   try {
-    const response = await axios.get('/api/admin/merchants')
+    const response = await axios.get('/admin/merchants')
     merchants.value = response.data.merchants || []
   } catch (error) {
     ElMessage.error('獲取商戶列表失敗')
@@ -230,7 +230,7 @@ const handleDelete = async (row) => {
     await ElMessageBox.confirm('確定要刪除該商店嗎？', '提示', {
       type: 'warning'
     })
-    await axios.delete(`/api/admin/stores/${row.id}`)
+    await axios.delete(`/admin/stores/${row.id}`)
     ElMessage.success('刪除成功')
     fetchStores()
   } catch (error) {
@@ -248,10 +248,10 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     
     if (form.value.id) {
-      await axios.put(`/api/admin/stores/${form.value.id}`, form.value)
+      await axios.put(`/admin/stores/${form.value.id}`, form.value)
       ElMessage.success('更新成功')
     } else {
-      await axios.post('/api/admin/stores', form.value)
+      await axios.post('/admin/stores', form.value)
       ElMessage.success('新增成功')
     }
     

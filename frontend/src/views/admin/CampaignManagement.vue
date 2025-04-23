@@ -264,7 +264,7 @@ const fetchCampaigns = async () => {
       pageSize: pageSize.value,
       ...searchForm.value
     }
-    const response = await axios.get('/api/admin/campaigns', { params })
+    const response = await axios.get('/admin/campaigns', { params })
     campaigns.value = response.data.campaigns
     total.value = response.data.total
   } catch (error) {
@@ -309,7 +309,7 @@ const handleToggleStatus = async (row) => {
         type: 'warning'
       }
     )
-    await axios.put(`/api/admin/campaigns/${row.id}/status`, {
+    await axios.put(`/admin/campaigns/${row.id}/status`, {
       status: row.status === 'active' ? 'ended' : 'active'
     })
     ElMessage.success('操作成功')
@@ -324,7 +324,7 @@ const handleToggleStatus = async (row) => {
 // 查看統計
 const handleViewStats = async (row) => {
   try {
-    const response = await axios.get(`/api/admin/campaigns/${row.id}/stats`)
+    const response = await axios.get(`/admin/campaigns/${row.id}/stats`)
     stats.value = response.data
     statsDialogVisible.value = true
     
@@ -383,10 +383,10 @@ const handleSubmit = async () => {
     delete data.dateRange
     
     if (data.id) {
-      await axios.put(`/api/admin/campaigns/${data.id}`, data)
+      await axios.put(`/admin/campaigns/${data.id}`, data)
       ElMessage.success('更新成功')
     } else {
-      await axios.post('/api/admin/campaigns', data)
+      await axios.post('/admin/campaigns', data)
       ElMessage.success('新增成功')
     }
     

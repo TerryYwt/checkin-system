@@ -75,7 +75,7 @@ const total = ref(0)
 // 獲取用戶列表
 const fetchUsers = async () => {
   try {
-    const response = await axios.get('/api/users')
+    const response = await axios.get('/users')
     users.value = response.data
   } catch (error) {
     ElMessage.error('獲取用戶列表失敗')
@@ -109,7 +109,7 @@ const handleSearch = async () => {
       params.append('endDate', searchForm.value.dateRange[1])
     }
 
-    const response = await axios.get(`/api/checkin-records?${params.toString()}`)
+    const response = await axios.get(`/checkin-records?${params.toString()}`)
     records.value = response.data
     total.value = response.data.length
   } catch (error) {

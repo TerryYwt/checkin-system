@@ -38,7 +38,7 @@ const lastUpdated = ref('')
 // 獲取 QR 碼
 const fetchQRCode = async () => {
   try {
-    const response = await axios.get('/api/user/qrcode')
+    const response = await axios.get('/user/qrcode')
     qrcodeUrl.value = response.data.qrcodeUrl
     lastUpdated.value = response.data.lastUpdated
   } catch (error) {
@@ -51,7 +51,7 @@ const handleDownload = async () => {
   if (!qrcodeUrl.value) return
   
   try {
-    const response = await axios.get('/api/user/qrcode/download', {
+    const response = await axios.get('/user/qrcode/download', {
       responseType: 'blob'
     })
     const url = window.URL.createObjectURL(new Blob([response.data]))

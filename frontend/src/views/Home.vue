@@ -14,7 +14,7 @@ const status = ref('')
 
 const checkHealth = async () => {
   try {
-    const response = await axios.get('/api/health')
+    const response = await axios.get('/health')
     status.value = response.data.status
   } catch (error) {
     status.value = 'Error: ' + error.message

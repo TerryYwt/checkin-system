@@ -70,7 +70,7 @@ const rules = {
 // 獲取用戶列表
 const fetchUsers = async () => {
   try {
-    const response = await axios.get('/api/users')
+    const response = await axios.get('/users')
     users.value = response.data
   } catch (error) {
     ElMessage.error('獲取用戶列表失敗')
@@ -81,7 +81,7 @@ const fetchUsers = async () => {
 const fetchTodayRecords = async () => {
   try {
     const today = new Date().toISOString().split('T')[0]
-    const response = await axios.get(`/api/checkin-records?startDate=${today}`)
+    const response = await axios.get(`/checkin-records?startDate=${today}`)
     todayRecords.value = response.data
   } catch (error) {
     ElMessage.error('獲取今日簽到記錄失敗')
@@ -109,7 +109,7 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     loading.value = true
 
-    await axios.post('/api/checkin', form.value)
+    await axios.post('/checkin', form.value)
     ElMessage.success('簽到成功！')
     
     // 重置表單

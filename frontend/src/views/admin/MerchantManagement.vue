@@ -207,7 +207,7 @@ const rules = {
 const fetchMerchants = async () => {
   loading.value = true
   try {
-    const response = await axios.get('/api/admin/merchants', {
+    const response = await axios.get('/admin/merchants', {
       params: {
         page: currentPage.value,
         pageSize: pageSize.value,
@@ -268,13 +268,13 @@ const submitForm = async () => {
     if (valid) {
       try {
         if (isEdit.value) {
-          await axios.put(`/api/admin/merchants/${form.id}`, {
+          await axios.put(`/admin/merchants/${form.id}`, {
             ...form,
             password: undefined
           })
           ElMessage.success('商戶更新成功')
         } else {
-          await axios.post('/api/admin/merchants', form)
+          await axios.post('/admin/merchants', form)
           ElMessage.success('商戶創建成功')
         }
         dialogVisible.value = false
@@ -290,7 +290,7 @@ const submitForm = async () => {
 const toggleStatus = async (row) => {
   try {
     const newStatus = row.status === 'active' ? 'inactive' : 'active'
-    await axios.put(`/api/admin/merchants/${row.id}`, {
+    await axios.put(`/admin/merchants/${row.id}`, {
       ...row,
       status: newStatus
     })
