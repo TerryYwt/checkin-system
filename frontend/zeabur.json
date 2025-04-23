@@ -5,6 +5,6 @@
   "port": 80,
   "env": {
     "NODE_ENV": "production",
-    "VITE_API_URL": "https://checkin-system-api.zeabur.app"
+    "VITE_API_URL": "https://checkin-system-api.zeabur.app/api"
   }
 } 
