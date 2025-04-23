@@ -9,7 +9,7 @@ import { useAuthStore } from './store/auth'
 
 // Configure Axios
 const apiUrl = import.meta.env.VITE_API_URL
-axios.defaults.baseURL = apiUrl.endsWith('/api') ? apiUrl : `${apiUrl}/api`
+axios.defaults.baseURL = apiUrl
 
 // 從 localStorage 獲取 token 並設置請求頭
 const token = localStorage.getItem('token')
