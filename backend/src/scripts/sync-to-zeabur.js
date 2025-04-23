@@ -1,8 +1,44 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const localConfig = require('../config/database');
-const zeaburConfig = require('../config/zeabur-db-config');
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
+
+// Define database configurations from environment variables
+const localConfig = {
+  database: process.env.DB_NAME || 'checkin_system',
+  username: process.env.DB_USER || 'root',
+  password: process.env.DB_PASS,
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '3306'),
+  dialect: 'mysql',
+  logging: console.log
+};
+
+const zeaburConfig = {
+  database: process.env.ZEABUR_DB_NAME || 'zeabur',
+  username: process.env.ZEABUR_DB_USER || 'root',
+  password: process.env.ZEABUR_DB_PASSWORD,
+  host: process.env.ZEABUR_DB_HOST,
+  port: parseInt(process.env.ZEABUR_DB_PORT || '30629'),
+  dialect: 'mysql',
+  logging: console.log
+};
+
+// Enhanced logging for debugging
+console.log('Starting sync script with detailed logging...');
+
+// Log configurations (without passwords)
+console.log('\nLocal database configuration:');
+console.log('- Host:', localConfig.host);
+console.log('- Port:', localConfig.port);
+console.log('- Database:', localConfig.database);
+console.log('- Username:', localConfig.username);
+
+console.log('\nZeabur database configuration:');
+console.log('- Host:', zeaburConfig.host);
+console.log('- Port:', zeaburConfig.port);
+console.log('- Database:', zeaburConfig.database);
+console.log('- Username:', zeaburConfig.username);
 
 // Helper function to format dates for MySQL
 function formatDateForMySQL(date) {
@@ -41,8 +77,33 @@ console.log('Zeabur database config:', {
 
 // Create connections
 console.log('Creating database connections...');
-const localSequelize = new Sequelize(localConfig);
-const zeaburSequelize = new Sequelize(zeaburConfig);
+console.log('Local database name:', localConfig.database);
+console.log('Zeabur database name:', zeaburConfig.database);
+
+// Create Sequelize instances with explicit database names
+const localSequelize = new Sequelize(
+  localConfig.database,
+  localConfig.username,
+  localConfig.password,
+  {
+    host: localConfig.host,
+    port: localConfig.port,
+    dialect: localConfig.dialect,
+    logging: localConfig.logging
+  }
+);
+
+const zeaburSequelize = new Sequelize(
+  zeaburConfig.database,
+  zeaburConfig.username,
+  zeaburConfig.password,
+  {
+    host: zeaburConfig.host,
+    port: zeaburConfig.port,
+    dialect: zeaburConfig.dialect,
+    logging: zeaburConfig.logging
+  }
+);
 
 async function createTables() {
   try {
@@ -267,6 +328,9 @@ async function clearAllData() {
 }
 
 async function insertWithIdMapping(table, rows, columns, values) {
+  console.log(`Inserting into ${table} with values:`, values);
+  console.log(`Current ID mappings:`, idMappings);
+  
   // Insert the data
   await zeaburSequelize.query(
     `INSERT INTO ${table} (${columns.join(',')}) VALUES ${values}`
@@ -290,6 +354,7 @@ async function insertWithIdMapping(table, rows, columns, values) {
   rows.forEach((row, index) => {
     if (insertedRows[index]) {
       idMappings[table][row.id] = insertedRows[index].id;
+      console.log(`Mapped ${table} ID ${row.id} to ${insertedRows[index].id}`);
     }
   });
 
@@ -331,8 +396,8 @@ async function syncData() {
       'stores',
       'campaigns',
       'qrcodes',
-      'checkins',
-      'settings'
+      'checkins'
+      // 'settings' - Skipping settings as it's handled separately
     ];
 
     for (const table of tableOrder) {
@@ -344,19 +409,58 @@ async function syncData() {
       console.log(`Found ${rows.length} rows in local ${table} table`);
 
       if (rows.length > 0) {
-        // Special handling for merchants table to avoid duplicate user_id
-        if (table === 'merchants') {
+        if (table === 'stores') {
+          console.log('Processing stores table with merchant_id mapping...');
+          const columns = Object.keys(rows[0]);
+          const values = rows.map(row => {
+            const mappedValues = columns.map(col => {
+              if (row[col] === null) return 'NULL';
+              if (col.includes('_at') || col.includes('_time')) {
+                return formatDateForMySQL(row[col]);
+              }
+              if (col === 'merchant_id') {
+                const mappedId = idMappings.merchants[row[col]];
+                console.log(`Mapping merchant_id ${row[col]} to ${mappedId}`);
+                if (!mappedId) {
+                  throw new Error(`No mapping found for merchant_id ${row[col]}`);
+                }
+                return mappedId;
+              }
+              return typeof row[col] === 'string' ? `'${row[col].replace(/'/g, "''")}'` : row[col];
+            });
+            return `(${mappedValues.join(',')})`;
+          }).join(',');
+          
+          console.log(`Inserting ${rows.length} stores with mapped merchant_ids...`);
+          console.log('Current merchant ID mappings:', idMappings.merchants);
+          console.log('SQL values:', values);
+          const insertedCount = await insertWithIdMapping(table, rows, columns, values);
+          console.log(`Inserted ${insertedCount} stores successfully`);
+        } else if (table === 'merchants') {
+          // Special handling for merchants table to avoid duplicate user_id
           console.log('Processing merchants table with special handling...');
-          // Group by user_id and keep only the most recent entry
+          
+          // First, get all stores to identify merchants with associated stores
+          const [stores] = await localSequelize.query('SELECT DISTINCT merchant_id FROM stores');
+          const merchantsWithStores = new Set(stores.map(s => s.merchant_id));
+          console.log('Merchants with associated stores:', Array.from(merchantsWithStores));
+          
+          // Group by user_id and keep the most recent entry, but preserve merchants with stores
           const uniqueMerchants = {};
           rows.forEach(row => {
-            if (!uniqueMerchants[row.user_id] || 
+            if (merchantsWithStores.has(row.id)) {
+              // Always keep merchants that have associated stores
+              uniqueMerchants[row.id] = row;
+            } else if (!uniqueMerchants[row.user_id] || 
                 new Date(row.updated_at) > new Date(uniqueMerchants[row.user_id].updated_at)) {
+              // For other merchants, keep the most recent one per user_id
               uniqueMerchants[row.user_id] = row;
             }
           });
+          
           const uniqueRows = Object.values(uniqueMerchants);
           console.log(`Found ${uniqueRows.length} unique merchants after deduplication`);
+          console.log('Unique merchants:', uniqueRows.map(m => ({ id: m.id, user_id: m.user_id, business_name: m.business_name })));
           
           if (uniqueRows.length > 0) {
             const columns = Object.keys(uniqueRows[0]);
@@ -378,6 +482,26 @@ async function syncData() {
             const insertedCount = await insertWithIdMapping(table, uniqueRows, columns, values);
             console.log(`Inserted ${insertedCount} unique merchants successfully`);
           }
+        } else if (table === 'settings') {
+          // Special handling for settings table to escape reserved words
+          console.log('Processing settings table with special handling...');
+          const columns = Object.keys(rows[0]).map(col => col === 'key' ? '`key`' : col);
+          const values = rows.map(row => {
+            const mappedValues = columns.map(col => {
+              const actualCol = col.replace('`', '');
+              if (row[actualCol] === null) return 'NULL';
+              if (col.includes('_at') || col.includes('_time')) {
+                return formatDateForMySQL(row[actualCol]);
+              }
+              return typeof row[actualCol] === 'string' ? `'${row[actualCol].replace(/'/g, "''")}'` : row[actualCol];
+            });
+            return `(${mappedValues.join(',')})`;
+          }).join(',');
+          
+          console.log(`Inserting ${rows.length} settings...`);
+          console.log('SQL values:', values);
+          const insertedCount = await insertWithIdMapping(table, rows, columns, values);
+          console.log(`Inserted ${insertedCount} settings successfully`);
         } else {
           // Normal handling for other tables
           console.log(`Processing ${table} table normally...`);
@@ -437,6 +561,71 @@ async function syncData() {
     console.log('Database connections closed');
   }
 }
+
+async function main() {
+  try {
+    console.log('Starting sync script with detailed logging...');
+
+    // Log configurations (without passwords)
+    console.log('\nLocal database configuration:');
+    console.log('- Host:', localConfig.host);
+    console.log('- Port:', localConfig.port);
+    console.log('- Database:', localConfig.database);
+    console.log('- Username:', localConfig.username);
+
+    console.log('\nZeabur database configuration:');
+    console.log('- Host:', zeaburConfig.host);
+    console.log('- Port:', zeaburConfig.port);
+    console.log('- Database:', zeaburConfig.database);
+    console.log('- Username:', zeaburConfig.username);
+
+    // Create local database connection
+    console.log('\nTesting local database connection...');
+    const localSequelize = new Sequelize(
+      localConfig.database,
+      localConfig.username,
+      localConfig.password,
+      {
+        host: localConfig.host,
+        port: localConfig.port,
+        dialect: localConfig.dialect,
+        logging: localConfig.logging
+      }
+    );
+
+    // Test local connection
+    await localSequelize.authenticate();
+    console.log('Local database connection successful');
+
+    // Create Zeabur database connection
+    console.log('\nTesting Zeabur database connection...');
+    const zeaburSequelize = new Sequelize(
+      zeaburConfig.database,
+      zeaburConfig.username,
+      zeaburConfig.password,
+      {
+        host: zeaburConfig.host,
+        port: zeaburConfig.port,
+        dialect: zeaburConfig.dialect,
+        logging: zeaburConfig.logging
+      }
+    );
+
+    // Test Zeabur connection
+    await zeaburSequelize.authenticate();
+    console.log('Zeabur database connection successful');
+
+    // Start the sync process
+    await syncData();
+
+  } catch (error) {
+    console.error('Error in main process:', error);
+    process.exit(1);
+  }
+}
+
+// Run the main function
+main();
 
 module.exports = {
   syncData
