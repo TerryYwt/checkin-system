@@ -1,0 +1,2 @@
+SHOW TABLES;
+SHOW CREATE TABLE campaigns; 

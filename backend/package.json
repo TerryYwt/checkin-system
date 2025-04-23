@@ -20,7 +20,12 @@
   "engines": {
     "node": ">=16.0.0"
   },
-  "keywords": ["express", "node", "backend", "api"],
+  "keywords": [
+    "express",
+    "node",
+    "backend",
+    "api"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -38,7 +43,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "axios": "^1.8.4",
+    "axios": "1.8.4",
     "chai": "^5.2.0",
     "nodemon": "^2.0.22",
     "sequelize-cli": "^6.6.2"
