@@ -23,7 +23,12 @@ module.exports = (sequelize) => {
       unique: true,
       validate: {
         len: [6, 20],
-        is: /^[a-zA-Z0-9]+$/ // Only allow letters and numbers
+        is: /^[a-zA-Z0-9]+$/, // Only allow letters and numbers
+        customValidator(value) {
+          if (this.role === 'user' && !value) {
+            throw new Error('trial_id is required for user role');
+          }
+        }
       }
     },
     password: {
