@@ -1,4 +1,6 @@
 const axios = require('axios');
+const bcryptjs = require('bcryptjs');
+const { User } = require('../models');
 require('dotenv').config();
 
 async function testLogin() {
@@ -8,12 +10,12 @@ async function testLogin() {
   const accounts = [
     {
       username: 'testadmin',
-      password: process.env.TEST_ADMIN_PASSWORD || 'testadmin123',
+      password: process.env.TEST_ADMIN_PASSWORD || 'Admin@123456',
       role: 'admin'
     },
     {
       username: 'testmerchant',
-      password: process.env.TEST_MERCHANT_PASSWORD || 'testmerchant123',
+      password: process.env.TEST_MERCHANT_PASSWORD || 'Merchant@123456',
       role: 'merchant'
     }
   ];
@@ -27,6 +29,30 @@ async function testLogin() {
       console.log(`\nTesting login for ${account.role} account (${account.username})...`);
       console.log('Using password:', account.password);
       
+      // Check if user exists and verify stored password
+      const user = await User.findOne({
+        where: { username: account.username },
+        attributes: { include: ['password'] }
+      });
+      
+      if (user) {
+        console.log('User found in database:', {
+          id: user.id,
+          username: user.username,
+          role: user.role,
+          status: user.status
+        });
+        
+        // Verify stored password hash
+        const storedPasswordValid = await bcryptjs.compare(account.password, user.password);
+        console.log('Stored password valid:', storedPasswordValid);
+        console.log('Stored password hash:', user.password);
+      } else {
+        console.log('User not found in database');
+      }
+      
+      // Try login request
+      console.log('\nAttempting login request...');
       const response = await axios.post(`${baseURL}/auth/login`, {
         username: account.username,
         password: account.password

@@ -1,39 +1,60 @@
-const mysql = require('mysql2/promise');
+const { User } = require('../models');
+const bcryptjs = require('bcryptjs');
 require('dotenv').config();
 
 async function checkUsers() {
-  console.log('Starting database check...');
-  
-  const connection = await mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '3306'),
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME || 'checkin_system'
-  });
-
   try {
-    console.log('Connected to database successfully');
+    console.log('Checking test admin user...');
+    const admin = await User.findOne({ 
+      where: { username: 'testadmin' },
+      attributes: { include: ['password'] }
+    });
     
-    console.log('\nChecking users table...');
-    const [users] = await connection.execute('SELECT * FROM users');
-    console.log('All users:', JSON.stringify(users, null, 2));
-
-    console.log('\nChecking merchants table...');
-    const [merchants] = await connection.execute('SELECT * FROM merchants');
-    console.log('All merchants:', JSON.stringify(merchants, null, 2));
-  } catch (error) {
-    console.error('Error occurred:', error.message);
-    if (error.code) {
-      console.error('Error code:', error.code);
+    if (admin) {
+      console.log('Admin user found:', {
+        id: admin.id,
+        username: admin.username,
+        email: admin.email,
+        role: admin.role,
+        status: admin.status
+      });
+      
+      const adminPasswordValid = await bcryptjs.compare(
+        process.env.TEST_ADMIN_PASSWORD || 'Admin@123456',
+        admin.password
+      );
+      console.log('Admin password valid:', adminPasswordValid);
+    } else {
+      console.log('Admin user not found');
     }
-  } finally {
-    await connection.end();
-    console.log('\nDatabase connection closed');
+
+    console.log('\nChecking test merchant user...');
+    const merchant = await User.findOne({ 
+      where: { username: 'testmerchant' },
+      attributes: { include: ['password'] }
+    });
+    
+    if (merchant) {
+      console.log('Merchant user found:', {
+        id: merchant.id,
+        username: merchant.username,
+        email: merchant.email,
+        role: merchant.role,
+        status: merchant.status
+      });
+      
+      const merchantPasswordValid = await bcryptjs.compare(
+        process.env.TEST_MERCHANT_PASSWORD || 'Merchant@123456',
+        merchant.password
+      );
+      console.log('Merchant password valid:', merchantPasswordValid);
+    } else {
+      console.log('Merchant user not found');
+    }
+
+  } catch (error) {
+    console.error('Error checking users:', error);
   }
 }
 
-checkUsers().catch(error => {
-  console.error('Fatal error:', error);
-  process.exit(1);
-}); 
+checkUsers(); 

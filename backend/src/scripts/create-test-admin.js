@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client');
 const { admin: testAdmin } = require('../config/test-accounts');
 
@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 async function createTestAdmin() {
   try {
-    const hashedPassword = await bcrypt.hash(process.env.TEST_ADMIN_PASSWORD, 10);
+    const hashedPassword = await bcryptjs.hash(process.env.TEST_ADMIN_PASSWORD, 10);
 
     const user = await prisma.user.create({
       data: {
